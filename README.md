@@ -4,13 +4,14 @@ A guide on how to compile [Nethack 3.6.6](https://www.nethack.org/v366/release.h
 This guide details how to set up a Nethack 3.6.6 server on CentOS 7 or 8. If you are using a different distribution, the required packages may have different names, and the commands used to install them will differ depending on your package manager.
 
 The steps to setup a Nethack 3.6.6 server are as follows:
-1) Install Prerequisites
-2) Configuring Nethack for the chroot Environment
-3) Compiling Nethack
-4) Compiling dgamelaunch
-5) Configuring the chroot creation script
-6) Adjusting the dgamelaunch configuration
-7) Set up the Telnet Server
+1) [Installing Requisite Packages](#installing-requisite-packages)
+2) [Configuring Nethack for the Chroot Environment](#configuring-nethack-for-the-chroot-environment)
+3) [Compiling Nethack](#configuring-nethack-for-the-chroot-environment)
+4) [Compiling dgamelaunch](#compiling-dgamelaunch)
+5) [Creating the Chroot](#creating-the-chroot)
+6) [Configuring Dgamelaunch](#configuring-dgamelaunch)
+7) [Testing Nethack and Dgamelaunch](#testing-nethack-and-dgamelaunch)
+8) [Setting up the Telnet Server](#setting-up-the-telnet-server)
 
 Here are the directories we will be using in this example:
 
@@ -20,7 +21,7 @@ Here are the directories we will be using in this example:
 - Dgamelaunch will be compiled into /home/dgamelaunch/
 
 
-### Requisite Packages
+### Installing Requisite Packages
 The commands that you will run to install all required packages:
 ```
 yum install gzip make gcc ncurses-libs ncurses-devel byacc flex autoconf automake git sqlite sqlite-devel xinetd telnet-server
@@ -48,7 +49,7 @@ yum install xinetd telnet-server
 ```
 
 
-### Downloading Nethack
+#### Downloading Nethack
 Download the tarball and unpack it.
 ```
 mkdir  /home/nethack-temp/ && cd  /home/nethack-temp/
@@ -57,7 +58,7 @@ tar -xzf nethack-366-src.tgz
 cd NetHack-NetHack-3.6.6_Released
 ```
 
-### Customizing Nethack for the chroot Environment
+### Configuring Nethack for the Chroot Environment
 ##### 1) Edit src/cmd.c
 
 Change function enter_explore_mode() so users cannot do that; comment it out. Here's what that function will look like when commented out:
@@ -119,7 +120,7 @@ When I tried to install nethack using a different prefix, I couldn't get it to r
 /nh366/nethack
 ```
 
-### Downloading and Compiling dgamelaunch
+### Compiling Dgamelaunch
 
 ##### 1) Download the latest version from GitHub
 ```
@@ -138,8 +139,8 @@ cd dgamelaunch
 make 
 ```
 
-### Configuring the chroot script
-Edit these lines in dgl-create-chroot, as follows:
+### Creating the Chroot
+##### 1) Edit these lines in dgl-create-chroot, as follows:
 ```
 CHROOT="/home/nethack/"
 NHSUBDIR="/nh366/"
@@ -147,7 +148,7 @@ NH_VAR_PLAYGROUND="/nh366/var/"
 NH_PLAYGROUND_FIXED="/home/nethack-compiled/nh366"
 ```
 
-Change all references to "343" to "366". Here they are:
+In dgl-create-chroot, change all references to "343" to "366". Here they are:
 ```
 mkdir -p "$CHROOT/dgldir/inprogress-nh343"
 
@@ -158,13 +159,13 @@ cp "$CURDIR/dgl-default-rcfile" "dgl-default-rcfile.nh343"
 chmod go+r dgl_menu_main_anon.txt dgl_menu_main_user.txt dgl-banner dgl-default-rcfile.nh343
 ```
 
-### Setup the Chroot
-##### 1) Create the chroot
+##### 2) Setup the Chroot
+Create the chroot
 ```
 ./dgl-create-chroot
 ```
 
-##### 2) Move /nh366 into /home/nethack/
+Move /nh366 into /home/nethack/
 ```
 mv /home/nethack/nh366/var/ /home/nethack/
 mv -f /nh366 /home/nethack/
@@ -172,8 +173,8 @@ chown -R games:games nh366/
 rm /games/nethack
 ```
 
-### Adjust the dgamelaunch Configuration
-##### 1) Edit these lines in /home/nethack/etc/dgamelaunch.conf as follows:
+### Configuring Dgamelaunch
+##### Edit these lines in /home/nethack/etc/dgamelaunch.conf as follows:
 ```
  chroot_path  (enter full chroot path) "/home/nethack/"
  maxusers     (set the maximum number of registered users (not simultaneous users))
@@ -183,7 +184,7 @@ rm /games/nethack
  menu_max_idle_time (uncomment)
 ```
 
-##### 2) Change all references to "343" to "366". Here they are:
+In dgamelaunch.conf, change all references to "343" to "366". Here they are:
 ```
 commands["o"] = ifnxcp "/dgl-default-rcfile.nh343" "%ruserdata/%n/%n.nh343rc",
 
@@ -208,7 +209,7 @@ commands = cp "/nh343/var/save/%u%n.gz" "/nh343/var/save/%u%n.gz.bak",
 setenv "NETHACKOPTIONS" "@%ruserdata/%n/%n.nh343rc",
 ```
 
-### Testing Nethack and dgamelaunch
+### Testing Nethack and Dgamelaunch
 ##### 1) Make sure that you can run nethack inside the chroot environment.
 Try the following as root:
 ```
@@ -262,20 +263,20 @@ service xinetd start
 chkconfig xinetd on
 ```
 
-### Testing the Telnet Server
+#### Testing the Telnet Server
 
 Try connecting locally using `telnet 127.0.0.1`
 
 If you get an immediate "connection closed by foreign host", then something is probably wrong with dgamelaunch. A common issue is that the dgamelaunch config file was not specified correctly, and dgamelaunch is looking for it in /etc/dgamelaunch.conf and not in the chroot.
 
-### Customizing the Dgamelaunch Menus
+#### Customizing the Dgamelaunch Menus
 
 - Edit dgl-banner
 - Edit dgl_menu_*
 
 In particular, change the menu option in dgl_menu_main_user.txt from "Play NetHack 3.4.3" to 3.6.6.
 
-### Cleaning Up
+#### Cleaning Up
 
 /home/nethack-temp/ can be removed if you don't need it.
 
