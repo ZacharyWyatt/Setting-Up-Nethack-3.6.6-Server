@@ -17,7 +17,6 @@ Here are the directories we will be using in this example:
 
 - Nethack will be configured before compiling in /home/nethack-temp/
 - The chroot location will be /home/nethack/
-- Nethack will be compiled into /home/nethack-compiled/
 - Dgamelaunch will be compiled into /home/dgamelaunch/
 
 
