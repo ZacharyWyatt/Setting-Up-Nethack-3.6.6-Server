@@ -176,7 +176,7 @@ rm /games/nethack
 ##### Edit these lines in /home/nethack/etc/dgamelaunch.conf as follows:
 ```
  chroot_path  (enter full chroot path) "/home/nethack/"
- maxusers     (set the maximum number of registered users (not simultaneous users))
+ maxusers     (set the maximum number of registered users, not simultaneous users)
  SERVERID    (your server name)
  shed_uid     (UID of user "games")
  shed_gid     (GID of group "games")
