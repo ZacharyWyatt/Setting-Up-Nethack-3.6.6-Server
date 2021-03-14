@@ -147,7 +147,7 @@ NH_VAR_PLAYGROUND="/nh366/var/"
 NH_PLAYGROUND_FIXED="/home/nethack-compiled/nh366"
 ```
 
-In dgl-create-chroot, change all references to "343" to "366". Here they are:
+Also in dgl-create-chroot, change all references to "343" to "366". Here they are:
 ```
 mkdir -p "$CHROOT/dgldir/inprogress-nh343"
 
@@ -183,7 +183,7 @@ rm /games/nethack
  menu_max_idle_time (uncomment)
 ```
 
-In dgamelaunch.conf, change all references to "343" to "366". Here they are:
+Also in dgamelaunch.conf, change all references to "343" to "366". Here they are:
 ```
 commands["o"] = ifnxcp "/dgl-default-rcfile.nh343" "%ruserdata/%n/%n.nh343rc",
 
